@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RegAnalysisApplication {
+public class RuleAnalysisApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RegAnalysisApplication.class, args);
+        SpringApplication.run(RuleAnalysisApplication.class, args);
     }
 
 }
