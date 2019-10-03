@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+
+    <title>dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="plugins/bootstrap/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/dashboard.css" rel="stylesheet">
+
+</head>
+<body>
+<div class="container">
+    <div class="col-sm-12 padding-top-20">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">规则信息</h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="includeReg" class="col-sm-2 control-label">源IP规则：</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="includeReg" placeholder="IP:port">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="excludeReg" class="col-sm-2 control-label">目的IP规则：</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="excludeReg" placeholder="IP:port">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="actionType" class="col-sm-2 control-label">Action：</label>
+                        <div class="col-sm-9">
+                            <select class="form-control col-sm-2" id="actionType">
+                                <option value="1">测量</option>
+                                <option value="2">丢弃</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group ip-reg-content">
+                        <div class="col-sm-offset-2 col-sm-10" id="ipRegContent">
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary btn-sm" id="updateIpRegex">更新</button>
+                        </div>
+                    </div>
+                </form>
+                <div style="border: 1px solid red; height: 100px">
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">过滤包信息</h3>
+            </div>
+            <div class="panel-body">
+                <div class="info-container" >
+                    <table class="table table-condensed">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>时 间</th>
+                            <th>包长度（）</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>2018-04-25 17:08:56</td>
+                            <td>3534364</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>2018-04-25 17:08:56</td>
+                            <td>88</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="addr-container" id="addrContainer">
+    <div class="container">
+        <div class="addr-display col-sm-6 col-sm-offset-3">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="sendToAddr" class="col-sm-3 control-label">规则发送地址</label>
+                    <div class="col-sm-9">
+                        <input type="email" class="form-control" id="sendToAddr" placeholder="例:127.0.0.1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sendToPort" class="col-sm-3 control-label">规则发送端口</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="sendToPort" placeholder="0 - 65535">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="receivePort" class="col-sm-3 control-label">数据接收端口</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="receivePort" placeholder="0 - 65535">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <button type="button" class="btn btn-primary btn-sm" id="submitAddrInfo">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="page-copyright text-center">
+    Copyright &copy; 2019 <strong>测试</strong>
+</div>
+
+<script src="plugins/jquery-2.2.4.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="script/base.js"></script>
+<script src="script/dashboard.js"></script>
+<script src="script/my-utils.js"></script>
+
+<script>
+    $(function () {
+        // checkAddrInfo();
+
+        loadCurrentIpReg();
+
+        //地址提交点击事件
+        $("#submitAddrInfo").click(function () {
+            var addrInfo = new Object();
+            addrInfo.sendToAddr = $("#sendToAddr").val();
+            addrInfo.sendToPort = $("#sendToPort").val();
+            addrInfo.receivePort = $("#receivePort").val();
+            submitAddrInfo(addrInfo);
+        });
+
+        //更新规则点击事件
+        $("#updateIpRegex").click(function() {
+            var includeReg = $("#includeReg").val();
+            var excludeRwg = $("#excludeReg").val();
+            var actionType = $("#actionType option:selected").val();
+            console.log("sourceIP:" + includeReg);
+            console.log("targetIP:" + excludeRwg);
+
+            var ipReg = new Object();
+            ipReg.sourceIP = includeReg;
+            ipReg.targetIP = excludeRwg;
+            ipReg.actionType = actionType;
+            //update
+            updateIpReg(ipReg);
+        });
+
+    });
+</script>
+</body>
+</html>

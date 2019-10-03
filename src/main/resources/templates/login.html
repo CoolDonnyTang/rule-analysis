@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+
+    <title>login</title>
+
+    <!-- Bootstrap -->
+    <link href="plugins/bootstrap/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/login.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="login-display col-sm-12">
+        <div class="col-sm-6 col-sm-offset-3">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="输入Token..." id="tokenInput">
+                        <span class="input-group-btn">
+                        <button class="btn btn-primary" type="button" id="loginBtn">进入</button>
+                      </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-copyright text-center">
+    Copyright &copy; 2019 <strong>测试</strong>
+</div>
+
+<script src="plugins/jquery-2.2.4.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="script/base.js"></script>
+<script src="script/login.js"></script>
+<script>
+    $(function () {
+        //点击login
+        $("#loginBtn").click(function () {
+            login("dashboard");
+        });
+
+
+    });
+</script>
+</body>
+</html>
