@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.yzj</groupId>
-    <artifactId>reg-analysis</artifactId>
+    <artifactId>rule-analysis</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>reg-analysis</name>
+    <name>rule-analysis</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
