@@ -15,84 +15,138 @@
     <link href="css/dashboard.css" rel="stylesheet">
 
 </head>
-<body>
+<body class="body-scroll-r">
 <div class="container">
+
+    <div class="all-tab-content">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">规则信息</a></li>
+            <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">过滤包信息</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active tab-item" id="home">
+                <div class="panel panel-primary">
+                    <div class="panel-heading panel-header">
+                        <h5 class="panel-title">规则</h5>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="includeReg" class="col-sm-2 control-label">源IP规则：</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="includeReg" placeholder="IP:port">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="excludeReg" class="col-sm-2 control-label">目的IP规则：</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="excludeReg" placeholder="IP:port">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="actionType" class="col-sm-2 control-label">Action：</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control col-sm-2" id="actionType">
+                                        <option value="1">测量</option>
+                                        <option value="2">丢弃</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group ip-reg-content">
+                                <div class="col-sm-offset-2 col-sm-10" id="ipRegContent">
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="button" class="btn btn-primary btn-sm" id="updateIpRegex">更新</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading panel-header">
+                        <h5 class="panel-title">规则解析状态</h5>
+                    </div>
+                    <div class="panel-body">
+                        状态图展示区域
+                    </div>
+                </div>
+
+                <div class="col-sm-6 padding-l-0">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading panel-header">
+                            <h5 class="panel-title">规则解析指令</h5>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="padding-l-5">
+                                <li>if(1==1) {</li>
+                                <li>a+=1;</li>
+                                <li>}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 padding-r-0">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading panel-header">
+                            <h5 class="panel-title">规则解析机器码</h5>
+                        </div>
+                        <div class="panel-body">
+                            机器码展示区域
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div role="tabpanel" class="tab-pane tab-item" id="profile">
+                <div class="panel panel-primary">
+                    <div class="panel-heading panel-header">
+                        <h5 class="panel-title">过滤包信息</h5>
+                    </div>
+                    <div class="panel-body">
+                        <div class="info-container" >
+                            <table class="table table-condensed">
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>时 间</th>
+                                    <th>包长度（）</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>2018-04-25 17:08:56</td>
+                                    <td>3534364</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>2018-04-25 17:08:56</td>
+                                    <td>88</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
     <div class="col-sm-12 padding-top-20">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">规则信息</h3>
-            </div>
-            <div class="panel-body">
-                <form class="form-horizontal">
-                    <div class="form-group">
-                        <label for="includeReg" class="col-sm-2 control-label">源IP规则：</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="includeReg" placeholder="IP:port">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="excludeReg" class="col-sm-2 control-label">目的IP规则：</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="excludeReg" placeholder="IP:port">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="actionType" class="col-sm-2 control-label">Action：</label>
-                        <div class="col-sm-9">
-                            <select class="form-control col-sm-2" id="actionType">
-                                <option value="1">测量</option>
-                                <option value="2">丢弃</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group ip-reg-content">
-                        <div class="col-sm-offset-2 col-sm-10" id="ipRegContent">
-
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <button type="button" class="btn btn-primary btn-sm" id="updateIpRegex">更新</button>
-                        </div>
-                    </div>
-                </form>
-                <div style="border: 1px solid red; height: 100px">
 
 
-                </div>
-            </div>
-        </div>
 
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">过滤包信息</h3>
-            </div>
-            <div class="panel-body">
-                <div class="info-container" >
-                    <table class="table table-condensed">
-                        <thead>
-                        <tr>
-                            <th>序号</th>
-                            <th>时 间</th>
-                            <th>包长度（）</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>2018-04-25 17:08:56</td>
-                            <td>3534364</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>2018-04-25 17:08:56</td>
-                            <td>88</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
     </div>
 </div>
@@ -128,6 +182,8 @@
         </div>
     </div>
 </div>
+
+
 
 <div class="page-copyright text-center">
     Copyright &copy; 2019 <strong>测试</strong>

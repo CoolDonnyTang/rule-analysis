@@ -37,7 +37,7 @@ public class IpRegexServiceImpl implements IpRegexService {
             IpAddrStatus target = new IpAddrStatus(ipRegexInfo.getTargetIP());
             ActionPart action = new ActionPart(ipRegexInfo.getActionType());
 
-            //初始化寄存器地址
+            //初始化寄存器地址的key
             configService.initSourceIpReg(source);
             configService.initTargetIpReg(target);
             configService.initActionIpReg(action);
