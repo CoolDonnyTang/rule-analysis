@@ -1,14 +1,10 @@
 package com.yzj.reganalysis.util;
 
 import com.yzj.reganalysis.Entity.*;
-import com.yzj.reganalysis.bo.RangeCmdParamBO;
 import lombok.Data;
-import org.apache.el.stream.StreamELResolverImpl;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class CommandParser {
@@ -28,6 +24,7 @@ public class CommandParser {
     public static final String CMD_TYPE_NOP = "NOP";
     public static final String CMD_TYPE_ADDI = "ADDI";
     public static final String CMD_TYPE_J = "J";
+    public static final String CMD_TYPE_STOP = "STOP";
     private List<IpPart> allIpAndPortPart;
     IpAddrStatus source;
     IpAddrStatus target;
@@ -51,17 +48,19 @@ public class CommandParser {
         allIpAndPortPart.addAll(target.getParts());
     }
 
-    public List<Command> parse() {
+    public CommandParseResultBO parse() {
+        CommandParseResultBO returnResult = new CommandParseResultBO();
         List<Command> result = new ArrayList<>();
-
-        //add default
-        Command defaultCmd = new Command();
-        defaultCmd.setType(CMD_TYPE_DEFAULT);
-        defaultCmd.setLabel(LABEL_DEFAULT);
-        result.add(defaultCmd);
+        returnResult.setAllCommand(result);
+        List<List<String>> allStatus = new ArrayList<>();
+        returnResult.setAllStatus(allStatus);
 
         for(int partIndex=0; partIndex<allIpAndPortPart.size(); partIndex++) {
             IpPart currentPart = allIpAndPortPart.get(partIndex);
+
+            //part status
+            List<String> partStatus = new ArrayList<>();
+            allStatus.add(partStatus);
 
             //true:还存在下一个part
             boolean hasNextPart = !(partIndex == allIpAndPortPart.size()-1);
@@ -83,6 +82,9 @@ public class CommandParser {
                     Range range = partRange.get(rangeIndex);
                     int min = range.getMin();
                     int max = range.getMax();
+
+                    //add status
+                    partStatus.add(min+"-"+max);
 
                     //MIN cmd
                     result.addAll(getRangCMD(partIndex, rangeIndex, currentPart, MIN, min+"", hasNextRange, hasSimpleOrInCurrentPart, hasNextPart, nextPartHasRange));
@@ -128,6 +130,9 @@ public class CommandParser {
             List<Integer> status = new ArrayList<>(currentPart.getStatus());
             if(!CollectionUtils.isEmpty(status)) {
                 for(int i=0; i<status.size(); i++) {
+                    //add status
+                    partStatus.add(status.get(i).toString());
+
                     String label = LABEL_PREFIX+PART+(partIndex+1)+SEPARATOR+SIMPLE_OR+(i+1);
                     Command cmdADDI = new Command(label, CMD_TYPE_ADDI, currentPart.getTempReg(), currentPart.getZeroReg(), status.get(i).toString());
 
@@ -149,14 +154,49 @@ public class CommandParser {
                 }
                 Command cmdJ = new Command(null, CMD_TYPE_J, null, null, LABEL_DEFAULT);
                 result.add(cmdJ);
+                //Add NOP cmd
+                Command cmdNOP = new Command(null, CMD_TYPE_NOP, null, null, null);
+                result.add(cmdNOP);
             }
         }
 
         //添加Action的指令
         Command actionCmdADDI = new Command(LABEL_ACTION, CMD_TYPE_ADDI, action.getTargetReg(), action.getZeroReg(), action.getType().toString());
         result.add(actionCmdADDI);
+        Command actionCmdStop = new Command(null, CMD_TYPE_STOP, null, null, null);
+        result.add(actionCmdStop);
 
-        return result;
+        //add stop
+        Command defaultCmdNOP = new Command(LABEL_DEFAULT, CMD_TYPE_NOP, null, null, null);
+        result.add(defaultCmdNOP);
+        Command defaultCmdStop = new Command(null, CMD_TYPE_STOP, null, null, null);
+        result.add(defaultCmdStop);
+
+        //group label line number
+        Map<String, Integer> labelGroup = new HashMap<>();
+        for(int i=result.size()-1; i>=0; i--) {
+            int line = i+1;
+            Command cmd = result.get(i);
+            //put label line
+            if(cmd.getLabel() != null) {
+                labelGroup.put(cmd.getLabel(), line);
+            }
+
+            //replace label to line number
+            if(cmd.getTargetValue() != null && labelGroup.get(cmd.getTargetValue())!=null) {
+                cmd.setTargetValue(labelGroup.get(cmd.getTargetValue()).toString());
+            }
+
+        }
+
+        //返回字符串命令
+        List<String> cmdString = new ArrayList<>();
+        for(Command cmd : result) {
+            cmdString.add(cmd.toString());
+        }
+        returnResult.setAllCommandString(cmdString);
+
+        return returnResult;
     }
 
     private List<Command> getRangCMD(int partIndex, int rangeIndex, IpPart currentPart, String type, String value, boolean hasNextRange, boolean hasSimpleOrInCurrentPart, boolean hasNextPart, boolean nextPartHasRange) {
@@ -196,14 +236,23 @@ public class CommandParser {
             String nextRangeLabel = LABEL_PREFIX+PART+(partIndex+1)+SEPARATOR+RANGE+(rangeIndex+2)+SEPARATOR+MIN;
             Command minCmdJ = new Command(null, CMD_TYPE_J, null, null, nextRangeLabel);
             result.add(minCmdJ);
+            //Add NOP cmd
+            Command cmdNOP = new Command(null, CMD_TYPE_NOP, null, null, null);
+            result.add(cmdNOP);
         } else if(hasSimpleOrInCurrentPart) {//不存在下一个范围判断但存在简单‘或’判断则跳转至简单‘或’判断
             //label中的序号从1开始,跳转至简单或第一行
             String nextSimpleOrLabel = LABEL_PREFIX+PART+(partIndex+1)+SEPARATOR+SIMPLE_OR+"1";
             Command minCmdJ = new Command(null, CMD_TYPE_J, null, null, nextSimpleOrLabel);
             result.add(minCmdJ);
+            //Add NOP cmd
+            Command cmdNOP = new Command(null, CMD_TYPE_NOP, null, null, null);
+            result.add(cmdNOP);
         } else { //没有下一个范围判断且没有下一个简单‘或’判断则跳转到default
             Command minCmdJ = new Command(null, CMD_TYPE_J, null, null, LABEL_DEFAULT);
             result.add(minCmdJ);
+            //Add NOP cmd
+            Command cmdNOP = new Command(null, CMD_TYPE_NOP, null, null, null);
+            result.add(cmdNOP);
         }
         //for min end!!!
 

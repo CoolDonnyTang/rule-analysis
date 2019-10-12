@@ -66,11 +66,41 @@ function loadCurrentIpReg() {
             if(result.status == 200) {
                 var data = result.data;
                 updateIpRegAndStatus(data);
+
+                //展示解析的命令
+                displayCmd(result.data);
+
+                //展示机器码
+                displayBinaryCode(result.data)
             } else {
                 alert(result.message);
             }
         }
     });
+}
+
+function displayCmd(data) {
+    $("#cmdDisplay").empty();
+    var cmds = data.cmdParseResult.allCommandString;
+    if(cmds!=null && cmds!=undefined) {
+        for(var index in cmds) {
+            var $li = $("<li></li>");
+            $li.text(cmds[index]);
+            $("#cmdDisplay").append($li);
+        }
+    }
+}
+
+function displayBinaryCode(data) {
+    $("#binaryCode").empty();
+    var code = data.binaryCode;
+    if(code!=null && code!=undefined) {
+        for(var index in code) {
+            var $li = $("<li></li>");
+            $li.text(code[index] + "-" + code[index].length);
+            $("#binaryCode").append($li);
+        }
+    }
 }
 
 function updateIpRegAndStatus(data) {
@@ -123,7 +153,14 @@ function updateIpReg(ipReg) {
             alert("连接服务器失败");
         },
         success:function(result) {
-            updateIpRegAndStatus(result.data)
+            updateIpRegAndStatus(result.data);
+
+            //展示解析的命令
+            displayCmd(result.data);
+
+            //展示机器码
+            displayBinaryCode(result.data)
+
             if(result.status == 200) {
                 alert("Success.");
             } else {

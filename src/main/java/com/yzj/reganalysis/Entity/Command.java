@@ -27,12 +27,8 @@ public class Command {
 
     @Override
     public String toString() {
-        String result = "";
+        String result = (type + " ");
         List<String> tmp = new ArrayList<>();
-        if(StringUtils.isNotEmpty(this.label)) {
-            result = "\n" + this.label +":\n";
-        }
-        result += (type + " ");
         if(reg1!=null) {
             tmp.add(reg1);
         }
