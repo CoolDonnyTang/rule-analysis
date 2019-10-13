@@ -48,3 +48,6 @@
 .line-number {
     list-style-type:decimal;
 }
+.status-display {
+    overflow: auto;
+}

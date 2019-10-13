@@ -71,7 +71,10 @@ function loadCurrentIpReg() {
                 displayCmd(result.data);
 
                 //展示机器码
-                displayBinaryCode(result.data)
+                displayBinaryCode(result.data);
+
+                //绘制状态图
+                displayStatus(result.data);
             } else {
                 alert(result.message);
             }
@@ -101,6 +104,69 @@ function displayBinaryCode(data) {
             $("#binaryCode").append($li);
         }
     }
+}
+
+function displayStatus(data) {
+    $("#statusDisplay").empty();
+
+    var status = data.cmdParseResult.allStatus;
+    console.log("draw status");
+    console.log(status);
+    if(status!=null && status!=undefined && status.length>0) {
+        var leftPadding = 20;
+        var topPadding = 50;
+        var top = 100;
+        var yy = 100;
+        var width = (status.length+1)*yy + leftPadding*2;
+        var height = topPadding*2 + top;
+        var circleBorderColor = "#000";
+        var circleBorderWidth = "2";
+        var circleFillColor = "#fff";
+
+        var falsePointY = topPadding + top;
+        var falsePointX = width/2;
+        var r = 10;
+
+        var paper = Raphael("statusDisplay", width, height);
+
+        //draw false
+        var circleFalse = paper.circle(falsePointX, falsePointY, r).attr({
+            fill:circleFillColor, //填充色
+            stroke:circleBorderColor, //边缘线
+            "stroke-width":circleBorderWidth //
+        });
+
+        //初始节点
+        var startPointY = topPadding;
+        var startPointX = leftPadding;
+        //draw start
+        var circleStart = paper.circle(startPointX, startPointY, r).attr({
+            fill:circleFillColor, //填充色
+            stroke:circleBorderColor, //边缘线
+            "stroke-width":circleBorderWidth //
+        });
+
+        //Action节点
+        var actionPointX = width-leftPadding;
+        //draw start
+        var circleAction = paper.circle(actionPointX, startPointY, r).attr({
+            fill:circleFillColor, //填充色
+            stroke:circleBorderColor, //边缘线
+            "stroke-width":circleBorderWidth //
+        });
+
+        for(var i=0; i<status.length; i++) {
+            var partStatus = status[i].join("|");
+            var pointX = startPointX + (i+1)*yy;
+            var circle = paper.circle(pointX, startPointY, r).attr({
+                fill:circleFillColor, //填充色
+                stroke:circleBorderColor, //边缘线
+                "stroke-width":circleBorderWidth //
+            });
+        }
+
+    }
+
 }
 
 function updateIpRegAndStatus(data) {
@@ -159,7 +225,10 @@ function updateIpReg(ipReg) {
             displayCmd(result.data);
 
             //展示机器码
-            displayBinaryCode(result.data)
+            displayBinaryCode(result.data);
+
+            //绘制状态图
+            displayStatus(result.data);
 
             if(result.status == 200) {
                 alert("Success.");
