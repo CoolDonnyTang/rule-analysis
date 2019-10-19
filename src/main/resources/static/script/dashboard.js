@@ -125,13 +125,13 @@ function displayStatus(data) {
         var width = (status.length+1)*yy + leftPadding*2;
         var height = topPadding*2 + top;
 
-        var lineColor = "#003322";
-        var lineWidth = 3;
-
-        var textTopSgap = 8;
-        var textColor = "#17A9C6";
+        var textTopSgap = 18;
+        var textColor = "#000";
         var textFontSize = 16;
         var textFontFamily = "century gothic";
+
+        var passColor = "green";
+        var defaultColor = "red";
 
         var falsePointY = topPadding + top;
         var falsePointX = width/2;
@@ -199,68 +199,144 @@ function displayStatus(data) {
             });
 
             var yy1 = startPointY;
-            //起始节点连接其他节点
+            //起始节点连接到第一个节点
             if(i==0) {
                 var startX = startPointX + r;
                 var startY = yy1;
                 var endX = pointX - r;
                 var endY = yy1;
-                var param = "M" + startX + "," + startY + "L" + endX + "," + endY;
-                //连接到下一个节点
-                paper.path(param).attr({
-                    "stroke":lineColor,
-                    "stroke-width": lineWidth
-                });
-
-                // //连接到false节点
-                // var startX = startX - r;
-                // var startY = yy1 + r;
-                // var endX = falsePointX;
-                // var endY = falsePointY - r;
-                // var paramFalse = "M" + startX + "," + startY + "L" + endX + "," + endY;
-                // //连接到下一个节点
-                // paper.path(paramFalse).attr({
-                //     "stroke":lineColor,
-                //     "stroke-width": lineWidth
-                // });
+                drawLine(paper, startX, startY, endX, endY, "Right", passColor);
             }
+
+            var statusTextX;
+            var statusTextY;
 
             //连接到下一个节点
             var startX = pointX + r;
             var startY = yy1;
             var endX = startX + yy - 2*r;
             var endY = yy1;
-            var param2 = "M" + startX + "," + yy1 + "L" + endX + "," + endY;
-            console.log("p2: " + param2);
-            paper.path(param2).attr({
-                "stroke":lineColor,
-                "stroke-width": lineWidth
+            drawLine(paper, startX, startY, endX, endY, "Right", passColor);
+            //显示条件
+            var displayStatus = partStatus + "  " + "✔";
+            statusTextX = startX + 5;
+            statusTextY = startY + textFontSize + 5 - (i%2) * 34;
+            var textPartStatus = paper.text(statusTextX, statusTextY, displayStatus).attr({
+                "fill": passColor, // font-color
+                "font-size":textFontSize, // font size in pixels
+                "text-anchor":"start",
+                "font-family":textFontFamily // font family of the text
             });
 
             //连接到false节点
+            var isOdd = status.length%2 === 1;
+            var middleIndex = Math.floor(status.length/2);
+            console.log("middleIndex:" + middleIndex);
+
             var startX = startX - r;
             var startY = yy1 + r;
             var endX = falsePointX;
             var endY = falsePointY - r;
-            var paramFalse = "M" + startX + "," + startY + "L" + endX + "," + endY;
-            //连接到下一个节点
-            paper.path(paramFalse).attr({
-                "stroke":lineColor,
-                "stroke-width": lineWidth
+            var direction = "Right";
+
+            if(isOdd) { //奇数个
+                if(i<middleIndex) {
+                    direction = "Right";
+                    endX = falsePointX - r;
+                    endY = falsePointY;
+
+                    statusTextX = startX + 20;
+                    statusTextY = startY + 40 + (i%2) * 18;
+                } else if(i==middleIndex) {
+                    direction = "Down";
+
+                    statusTextX = startX + 3;
+                    statusTextY = startY + 40 + (i%2) * 18;
+                } else {
+                    direction = "Left";
+                    endX = falsePointX + r;
+                    endY = falsePointY;
+
+                    statusTextX = startX;
+                    statusTextY = startY + 40 + (i%2) * 18;
+                }
+            } else {
+                if(i<middleIndex) {
+                    direction = "Right";
+                    endX = falsePointX - r;
+                    endY = falsePointY;
+
+                    statusTextX = startX + 20;
+                    statusTextY = startY + 40 + (i%2) * 18;
+                } else {
+                    direction = "Left";
+                    endX = falsePointX + r;
+                    endY = falsePointY;
+
+                    statusTextX = startX;
+                    statusTextY = startY + 40 + (i%2) * 18;
+                }
+            }
+            drawLine(paper, startX, startY, endX, endY, direction, defaultColor);
+            //显示条件
+            var defaultStatus = partStatus + "  " + "✘";
+            var textPartStatus = paper.text(statusTextX, statusTextY, defaultStatus).attr({
+                "fill": defaultColor, // font-color
+                "font-size":textFontSize, // font size in pixels
+                "text-anchor":"start",
+                "font-family":textFontFamily // font family of the text
             });
-
         }
-
+    } else {
+        $("#statusDisplay").text("规则输入为空，请输至少一个规则");
     }
 }
 
-function drawLine(paper, startX, startY, endX, endY) {
-    var paramFalse = "M" + startX + "," + startY + "L" + endX + "," + endY;
-    //连接到下一个节点
-    paper.path(paramFalse).attr({
-        "stroke":lineColor,
+function drawLine(paper, startX, startY, endX, endY, direction, borderColor) {
+    var lineWidth = 3;
+
+    var tmpX  = startX;
+    var tmpY  = endY;
+
+    //箭头坐标
+    var jX = 10;
+    var jY = 5;
+
+    var jX1 = endX;
+    var jY1 = endY;
+    var jX2 = endX;
+    var jY2 = endY;
+
+    if("Right" === direction) {
+        jX1 = endX - jX;
+        jY1 = endY - jY;
+
+        jX2 = endX - jX;
+        jY2 = endY + jY;
+    } else if("Left" === direction) {
+        jX1 = endX + jX;
+        jY1 = endY - jY;
+
+        jX2 = endX + jX;
+        jY2 = endY + jY;
+    } else if("Down" === direction) {
+        jX1 = endX - jY;
+        jY1 = endY - jX;
+
+        jX2 = endX + jY;
+        jY2 = endY - jX;
+    }
+
+    var param = "M" + startX + "," + startY + "Q" + tmpX + "," + tmpY + "," + endX + "," + endY + "L" + jX1 + "," + jY1 + "M" + endX + "," + endY + "L" + jX2 + "," + jY2;
+    //画线
+    paper.path(param).attr({
+        "stroke":borderColor,
         "stroke-width": lineWidth
     });
+
+    //画
+
+
 }
 
 function updateIpRegAndStatus(data) {
