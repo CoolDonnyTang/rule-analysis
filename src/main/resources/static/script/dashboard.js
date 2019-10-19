@@ -115,17 +115,27 @@ function displayStatus(data) {
     if(status!=null && status!=undefined && status.length>0) {
         var leftPadding = 20;
         var topPadding = 50;
-        var top = 100;
-        var yy = 100;
+        var top = 200;
+        var yy = 200;
+
+        var circleBorderColor = "#000";
+        var circleBorderWidth = 3;
+        var circleFillColor = "#fff";
+
         var width = (status.length+1)*yy + leftPadding*2;
         var height = topPadding*2 + top;
-        var circleBorderColor = "#000";
-        var circleBorderWidth = "2";
-        var circleFillColor = "#fff";
+
+        var lineColor = "#003322";
+        var lineWidth = 3;
+
+        var textTopSgap = 8;
+        var textColor = "#17A9C6";
+        var textFontSize = 16;
+        var textFontFamily = "century gothic";
 
         var falsePointY = topPadding + top;
         var falsePointX = width/2;
-        var r = 10;
+        var r = 15;
 
         var paper = Raphael("statusDisplay", width, height);
 
@@ -134,6 +144,12 @@ function displayStatus(data) {
             fill:circleFillColor, //填充色
             stroke:circleBorderColor, //边缘线
             "stroke-width":circleBorderWidth //
+        });
+        var textFalse = paper.text(falsePointX-r-circleBorderWidth, falsePointY+r+circleBorderWidth+textTopSgap,"False").attr({
+            "fill":textColor, // font-color
+            "font-size":textFontSize, // font size in pixels
+            "text-anchor":"start",
+            "font-family":textFontFamily // font family of the text
         });
 
         //初始节点
@@ -145,6 +161,12 @@ function displayStatus(data) {
             stroke:circleBorderColor, //边缘线
             "stroke-width":circleBorderWidth //
         });
+        var textStart = paper.text(startPointX-r-circleBorderWidth, startPointY-r-circleBorderWidth-textTopSgap,"Start").attr({
+            "fill":textColor, // font-color
+            "font-size":textFontSize, // font size in pixels
+            "text-anchor":"start",
+            "font-family":textFontFamily // font family of the text
+        });
 
         //Action节点
         var actionPointX = width-leftPadding;
@@ -153,6 +175,12 @@ function displayStatus(data) {
             fill:circleFillColor, //填充色
             stroke:circleBorderColor, //边缘线
             "stroke-width":circleBorderWidth //
+        });
+        var textAction = paper.text(actionPointX-r-circleBorderWidth-10, startPointY-r-circleBorderWidth-textTopSgap,"Action").attr({
+            "fill":textColor, // font-color
+            "font-size":textFontSize, // font size in pixels
+            "text-anchor":"start",
+            "font-family":textFontFamily // font family of the text
         });
 
         for(var i=0; i<status.length; i++) {
@@ -163,10 +191,76 @@ function displayStatus(data) {
                 stroke:circleBorderColor, //边缘线
                 "stroke-width":circleBorderWidth //
             });
+            var textPart = paper.text(pointX-r-circleBorderWidth, startPointY-r-circleBorderWidth-textTopSgap,"Not empty part" + (i+1)).attr({
+                "fill":textColor, // font-color
+                "font-size":textFontSize, // font size in pixels
+                "text-anchor":"start",
+                "font-family":textFontFamily // font family of the text
+            });
+
+            var yy1 = startPointY;
+            //起始节点连接其他节点
+            if(i==0) {
+                var startX = startPointX + r;
+                var startY = yy1;
+                var endX = pointX - r;
+                var endY = yy1;
+                var param = "M" + startX + "," + startY + "L" + endX + "," + endY;
+                //连接到下一个节点
+                paper.path(param).attr({
+                    "stroke":lineColor,
+                    "stroke-width": lineWidth
+                });
+
+                // //连接到false节点
+                // var startX = startX - r;
+                // var startY = yy1 + r;
+                // var endX = falsePointX;
+                // var endY = falsePointY - r;
+                // var paramFalse = "M" + startX + "," + startY + "L" + endX + "," + endY;
+                // //连接到下一个节点
+                // paper.path(paramFalse).attr({
+                //     "stroke":lineColor,
+                //     "stroke-width": lineWidth
+                // });
+            }
+
+            //连接到下一个节点
+            var startX = pointX + r;
+            var startY = yy1;
+            var endX = startX + yy - 2*r;
+            var endY = yy1;
+            var param2 = "M" + startX + "," + yy1 + "L" + endX + "," + endY;
+            console.log("p2: " + param2);
+            paper.path(param2).attr({
+                "stroke":lineColor,
+                "stroke-width": lineWidth
+            });
+
+            //连接到false节点
+            var startX = startX - r;
+            var startY = yy1 + r;
+            var endX = falsePointX;
+            var endY = falsePointY - r;
+            var paramFalse = "M" + startX + "," + startY + "L" + endX + "," + endY;
+            //连接到下一个节点
+            paper.path(paramFalse).attr({
+                "stroke":lineColor,
+                "stroke-width": lineWidth
+            });
+
         }
 
     }
+}
 
+function drawLine(paper, startX, startY, endX, endY) {
+    var paramFalse = "M" + startX + "," + startY + "L" + endX + "," + endY;
+    //连接到下一个节点
+    paper.path(paramFalse).attr({
+        "stroke":lineColor,
+        "stroke-width": lineWidth
+    });
 }
 
 function updateIpRegAndStatus(data) {
